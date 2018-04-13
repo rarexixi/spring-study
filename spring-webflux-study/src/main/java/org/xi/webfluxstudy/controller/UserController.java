@@ -9,26 +9,21 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("controller")
-public class HelloController {
-    Map<Integer, User> users = new HashMap<>();
+@RequestMapping("user")
+public class UserController {
+
+    static Map<Integer, User> userMap = new HashMap<>();
 
     @PostConstruct
     public void init() {
-        User user1 = new User();
-        user1.setId(1);
-        user1.setUsername("rare");
-        user1.setEmail("rare@outlook.com");
-        User user2 = new User();
-        user2.setId(2);
-        user2.setUsername("xi");
-        user2.setEmail("xi@outlook.com");
-        users.put(1, user1);
-        users.put(2, user2);
+        userMap.put(1, new User(1, "rare", "rare@outlook.com"));
+        userMap.put(2, new User(2, "xi", "xi@outlook.com"));
+        userMap.put(2, new User(3, "xish", "xish@outlook.com"));
     }
 
     /**
@@ -36,12 +31,13 @@ public class HelloController {
      *
      * @return
      */
-    @GetMapping("/list")
-    public Flux<User> getAll() {
+    @GetMapping("/")
+    public Flux<User> index() {
 
-        return Flux.fromIterable(users.entrySet().stream()
+        List<User> userList = userMap.entrySet().stream()
                 .map(entry -> entry.getValue())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+        return Flux.fromIterable(userList);
     }
 
     /**
@@ -51,12 +47,10 @@ public class HelloController {
      * @return
      */
     @GetMapping("/detail/{id}")
-    public Mono<User> getUser(@PathVariable Integer id) {
-        User user1 = new User();
-        user1.setId(id);
-        user1.setUsername("rare");
-        user1.setEmail("rare@outlook.com");
-        return Mono.justOrEmpty(user1);
+    public Mono<User> get(@PathVariable Integer id) {
+
+        User user = userMap.getOrDefault(id, null);
+        return Mono.justOrEmpty(user);
     }
 
     /**
@@ -66,22 +60,22 @@ public class HelloController {
      * @return
      */
     @PutMapping("/put")
-    public Mono<ResponseEntity<String>> putUser(@RequestBody User user) {
-        users.put(user.getId(), user);
+    public Mono<ResponseEntity<String>> put(@RequestBody User user) {
+
+        userMap.put(user.getId(), user);
         return Mono.just(new ResponseEntity<>("Put Successfully!", HttpStatus.CREATED));
     }
 
     /**
      * 修改用户
      *
-     * @param id
      * @param user
      * @return
      */
-    @PostMapping("/post/{id}")
-    public Mono<ResponseEntity<User>> postUser(@PathVariable Integer id, @RequestBody User user) {
-        user.setId(id);
-        users.put(id, user);
+    @PostMapping("/update")
+    public Mono<ResponseEntity<User>> update(@RequestBody User user) {
+
+        userMap.put(user.getId(), user);
         return Mono.just(new ResponseEntity<>(user, HttpStatus.CREATED));
     }
 
@@ -92,8 +86,9 @@ public class HelloController {
      * @return
      */
     @DeleteMapping("/delete/{id}")
-    public Mono<ResponseEntity<String>> deleteMethod(@PathVariable Integer id) {
-        users.remove(id);
+    public Mono<ResponseEntity<String>> delete(@PathVariable Integer id) {
+
+        userMap.remove(id);
         return Mono.just(new ResponseEntity<>("Delete Successfully!", HttpStatus.ACCEPTED));
     }
 }

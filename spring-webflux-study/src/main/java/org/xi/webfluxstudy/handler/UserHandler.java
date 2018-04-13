@@ -12,14 +12,11 @@ import java.util.Optional;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Service
-public class HelloHandler {
+public class UserHandler {
 
-    public Mono<ServerResponse> getPerson(ServerRequest request) {
+    public Mono<ServerResponse> get(ServerRequest request) {
         Optional<String> id = request.queryParam("id");
-        User user = new User();
-        user.setId(Integer.valueOf(id.get()));
-        user.setUsername("rarexixi");
-        user.setEmail("rarexixi@outlook.com");
+        User user = new User(Integer.valueOf(id.get()), "rarexixi", "rarexixi@outlook.com");
         return ServerResponse.ok().contentType(APPLICATION_JSON).body(BodyInserters.fromObject(user));
     }
 }
