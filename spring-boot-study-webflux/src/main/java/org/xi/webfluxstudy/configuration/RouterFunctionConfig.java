@@ -21,7 +21,8 @@ public class RouterFunctionConfig {
     @Bean
     public RouterFunction<ServerResponse> restaurantRouter() {
         RouterFunction<ServerResponse> router =
-                RouterFunctions.route(GET("/user/get").and(accept(APPLICATION_JSON)), userHandler::get);
+                RouterFunctions.route(GET("/userhandler/get").and(accept(APPLICATION_JSON)), userHandler::get)
+                .andRoute(GET("/userhandler/detail").and(accept(APPLICATION_JSON)), userHandler::get);
 
         return router;
     }
