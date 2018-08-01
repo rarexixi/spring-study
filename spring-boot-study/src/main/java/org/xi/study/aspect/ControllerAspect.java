@@ -81,7 +81,7 @@ public class ControllerAspect {
             logger.error(methodName, sessionId, "服务出现异常", e);
         }
 
-        return new org.xi.common.model.Result<>(OperationConstants.SYSTEM_ERROR);
+        return new org.xi.common.model.ResultVo<>(OperationConstants.SYSTEM_ERROR);
     }
 
 

@@ -70,7 +70,7 @@ public class ResponseVo<T> implements Serializable {
 
     @Override
     public String toString() {
-        return "Result{" +
+        return "ResponseVo{" +
                 "success=" + success +
                 ", message='" + message + '\'' +
                 ", result=" + result +

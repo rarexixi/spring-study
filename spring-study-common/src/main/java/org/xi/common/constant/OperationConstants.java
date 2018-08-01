@@ -8,8 +8,7 @@ package org.xi.common.constant;
 public enum OperationConstants {
 
     SYSTEM_ERROR(100000, "系统错误"),
-    NOT_NULL(100001, "不能为空"),
-    VALIDATION_NOT_PASS(100002, "验证不通过"),
+    VALIDATION_FAILED(100001, "验证不通过"),
     SERVICE_NOT_AVAILABLE(100100, "服务提供方不存在");
 
     private String message;

@@ -9,29 +9,38 @@ import java.io.Serializable;
  * All Rights Reserved.
  * @version 1.0 2018/05/08 13:15 郗世豪（xish@cloud-young.com）
  */
-public class Result<T> implements Serializable {
+public class ResultVo<T> implements Serializable {
 
-    public Result() {
+    public ResultVo() {
 
     }
 
-    public Result(T result) {
+    public ResultVo(T result) {
         this(true, 0, null, result);
     }
 
-    public Result(OperationConstants constants) {
+    public ResultVo(OperationConstants constants) {
         this(false, constants.getCode(), constants.getMessage(), null);
     }
 
-    public Result(int code, String message) {
+    public ResultVo(OperationConstants constants, Object data) {
+        this(false, constants.getCode(), constants.getMessage(), null, data);
+    }
+
+    public ResultVo(int code, String message) {
         this(false, code, message, null);
     }
 
-    public Result(boolean success, int code, String message, T result) {
+    public ResultVo(boolean success, int code, String message, T result) {
+        this(success, code, message, result, null);
+    }
+
+    public ResultVo(boolean success, int code, String message, T result, Object data) {
         this.success = success;
         this.code = code;
         this.message = message;
         this.result = result;
+        this.data = data;
     }
 
     /**
@@ -50,6 +59,10 @@ public class Result<T> implements Serializable {
      * 返回数据
      */
     private T result;
+    /**
+     * 附加信息
+     */
+    private Object data;
 
     public boolean isSuccess() {
         return success;
@@ -83,9 +96,17 @@ public class Result<T> implements Serializable {
         this.result = result;
     }
 
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+
     @Override
     public String toString() {
-        return "Result{" +
+        return "ResultVo{" +
                 "success=" + success +
                 ", code=" + code +
                 ", message='" + message + '\'' +
