@@ -1,6 +1,6 @@
 package org.xi.study.model;
 
-import org.xi.study.common.validate.DataAdd;
+import org.xi.common.validate.DataAdd;
 
 import javax.validation.constraints.NotNull;
 

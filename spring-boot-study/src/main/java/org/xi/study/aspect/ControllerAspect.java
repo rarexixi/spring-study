@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.xi.common.constant.OperationConstants;
+import org.xi.common.model.ResultVo;
 import org.xi.common.utils.AnnotationUtils;
 import org.xi.common.utils.LogUtils;
 
@@ -81,7 +82,7 @@ public class ControllerAspect {
             logger.error(methodName, sessionId, "服务出现异常", e);
         }
 
-        return new org.xi.common.model.ResultVo<>(OperationConstants.SYSTEM_ERROR);
+        return new ResultVo<>(OperationConstants.SYSTEM_ERROR);
     }
 
 
