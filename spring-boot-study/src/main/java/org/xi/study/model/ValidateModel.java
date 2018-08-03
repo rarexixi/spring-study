@@ -6,6 +6,14 @@ import javax.validation.constraints.NotNull;
 
 public class ValidateModel {
 
+    public ValidateModel() {
+    }
+
+    public ValidateModel(String name, String words) {
+        this.name = name;
+        this.words = words;
+    }
+
     @NotNull(groups = {DataAdd.class}, message = "姓名不能为空")
     private String name;
 

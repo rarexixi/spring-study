@@ -12,8 +12,8 @@ import org.xi.common.constant.OperationConstants;
 import org.xi.common.model.ResultVo;
 import org.xi.common.utils.LogUtils;
 
+import javax.validation.ConstraintDeclarationException;
 import javax.validation.ConstraintViolation;
-import javax.validation.Valid;
 import javax.validation.Validator;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -56,26 +56,51 @@ public class ValidateAspect {
             List<String> messages = new LinkedList<>();
             for (int i = 0; i < parameters.length; i++) {
                 Parameter parameter = parameters[i];
-                Valid valid = parameter.getAnnotation(Valid.class);
                 Validated validated = parameter.getAnnotation(Validated.class);
-                if (valid == null && validated == null) continue;
-                Set<ConstraintViolation<Object>> validateResults = valid != null
-                        ? validator.validate(args[i])
-                        : validator.validate(args[i], validated.value());
-                for (ConstraintViolation<Object> constraintViolation : validateResults) {
-                    String message = constraintViolation.getMessage();
-                    messages.add(message);
+                if (validated == null) continue;
+                Object arg = args[i];
+                if (arg instanceof Collection || arg instanceof Object[]) {
+                    if (!validate(arg, validated)) {
+                        return new ResultVo<>(OperationConstants.VALIDATION_FAILED);
+                    }
+                } else {
+                    Set<ConstraintViolation<Object>> validateResults = validator.validate(arg, validated.value());
+                    for (ConstraintViolation<Object> constraintViolation : validateResults) {
+                        String message = constraintViolation.getMessage();
+                        messages.add(message);
+                    }
                 }
             }
             if (!messages.isEmpty()) {
                 return new ResultVo<>(OperationConstants.VALIDATION_FAILED, messages);
             }
-
             return proceedingJoinPoint.proceed();
+        } catch (ConstraintDeclarationException e) {
+            logger.error(methodName, "参数验证失败", e);
+            return new ResultVo<>(OperationConstants.VALIDATION_FAILED);
         } catch (Exception e) {
             logger.error(methodName, "服务出现异常", e);
         }
 
         return new ResultVo<>(OperationConstants.SYSTEM_ERROR);
     }
+
+    private boolean validate(Object arg, Validated validated) {
+        if (arg instanceof Collection) {
+            for (Object obj : (Collection) arg) {
+                if (validate(obj, validated)) continue;
+                return false;
+            }
+        } else if (arg instanceof Object[]) {
+            for (Object obj : (Object[]) arg) {
+                if (validate(obj, validated)) continue;
+                return false;
+            }
+        } else {
+            Set<ConstraintViolation<Object>> validateResults = validator.validate(arg, validated.value());
+            return validateResults.isEmpty();
+        }
+        return true;
+    }
+
 }

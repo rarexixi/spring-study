@@ -9,6 +9,8 @@ import org.xi.study.model.ValidateModel;
 import org.xi.study.service.ValidateService;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/validate")
@@ -20,11 +22,19 @@ public class ValidateController {
 
     @RequestMapping("/hello")
     public ResultVo<String> hello(ValidateModel model) {
-        return validateService.hello(model);
+        return validateService.hello(model, null);
     }
 
     @RequestMapping("/detail")
     public ResultVo<String> getDetail(@NotNull Integer id) {
         return new ResultVo<>("detail" + id);
+    }
+
+    @RequestMapping("/list")
+    public ResultVo<List<ValidateModel>> getList() {
+        List<ValidateModel> list = new ArrayList<>();
+        list.add(new ValidateModel("xi", "xi"));
+        list.add(new ValidateModel("yi", "yi"));
+        return validateService.getList(list);
     }
 }

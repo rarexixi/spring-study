@@ -16,6 +16,7 @@ import org.xi.common.utils.AnnotationUtils;
 import org.xi.common.utils.LogUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintDeclarationException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -78,6 +79,9 @@ public class ControllerAspect {
                 logger.info(methodName, sessionId, "服务执行结束", args);
             }
             return result;
+        } catch (ConstraintDeclarationException e) {
+            logger.error(methodName, "参数验证失败", e);
+            return new ResultVo<>(OperationConstants.VALIDATION_FAILED);
         } catch (Exception e) {
             logger.error(methodName, sessionId, "服务出现异常", e);
         }
