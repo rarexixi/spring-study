@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
 
     @RequestMapping("")
-    public String index(String name, @RequestParam("sessionId") String sessionId) {
-        if (name == null) {
-            int i = 0 / 0;
-        }
-        return "hello";
+    public String index(String name, @RequestParam(value = "sessionId", required = false) String sessionId) {
+        return "hello " + name;
     }
 }
