@@ -14,6 +14,7 @@ import org.xi.common.utils.LogUtils;
 
 import javax.validation.ConstraintDeclarationException;
 import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
 import javax.validation.Validator;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -27,6 +28,7 @@ public class ValidateAspect {
 
     @Autowired
     Validator validator;
+    //private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     /**
      * 设置标识
@@ -94,6 +96,12 @@ public class ValidateAspect {
         } else if (arg instanceof Object[]) {
             for (Object obj : (Object[]) arg) {
                 if (validate(obj, validated)) continue;
+                return false;
+            }
+        } else if (arg instanceof Map) {
+            Set<Map.Entry> entrySet = ((Map) arg).entrySet();
+            for (Map.Entry entry : entrySet) {
+                if (validate(entry.getValue(), validated)) continue;
                 return false;
             }
         } else {
