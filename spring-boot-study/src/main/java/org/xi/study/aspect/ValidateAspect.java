@@ -90,19 +90,17 @@ public class ValidateAspect {
     private boolean validate(Object arg, Validated validated) {
         if (arg instanceof Collection) {
             for (Object obj : (Collection) arg) {
-                if (validate(obj, validated)) continue;
-                return false;
+                if (!validate(obj, validated)) return false;
             }
         } else if (arg instanceof Object[]) {
             for (Object obj : (Object[]) arg) {
-                if (validate(obj, validated)) continue;
+                if (!validate(obj, validated)) return false;
                 return false;
             }
         } else if (arg instanceof Map) {
             Set<Map.Entry> entrySet = ((Map) arg).entrySet();
             for (Map.Entry entry : entrySet) {
-                if (validate(entry.getValue(), validated)) continue;
-                return false;
+                if (!validate(entry.getValue(), validated)) return false;
             }
         } else {
             Set<ConstraintViolation<Object>> validateResults = validator.validate(arg, validated.value());

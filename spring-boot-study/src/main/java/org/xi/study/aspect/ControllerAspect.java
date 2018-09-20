@@ -1,5 +1,10 @@
 package org.xi.study.aspect;
 
+import org.xi.common.constant.OperationConstants;
+import org.xi.common.model.ResultVo;
+import org.xi.common.utils.AnnotationUtils;
+import org.xi.common.utils.LogUtils;
+
 import org.apache.commons.lang3.time.StopWatch;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -9,14 +14,12 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.xi.common.constant.OperationConstants;
-import org.xi.common.model.ResultVo;
-import org.xi.common.utils.AnnotationUtils;
-import org.xi.common.utils.LogUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintDeclarationException;
+import javax.validation.ValidationException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -52,16 +55,18 @@ public class ControllerAspect {
             return proceedingJoinPoint.proceed();
         }
 
-        String methodName = "";
-        String sessionId = "";
+        MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
+        Method method = methodSignature.getMethod();
+        String methodName = request.getRemoteHost() + method.getDeclaringClass().getName() + "." + method.getName();
+        String sessionId = getSessionId(method, proceedingJoinPoint.getArgs());
         try {
+            logger.info(methodName, sessionId, "服务开始执行", getParameters(proceedingJoinPoint.getArgs()));
 
-            MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
-            Method method = methodSignature.getMethod();
-            methodName = request.getRemoteHost() + method.getDeclaringClass().getName() + "." + method.getName();
-            sessionId = getSessionId(method, proceedingJoinPoint.getArgs());
-
-            logger.info(methodName, sessionId, "服务开始执行", proceedingJoinPoint.getArgs());
+            List<String> messages = getErrorMessage(proceedingJoinPoint.getArgs());
+            if (!messages.isEmpty()) {
+                logger.error(methodName, "参数验证失败", messages);
+                return new ResultVo<>(OperationConstants.VALIDATION_FAILED, messages);
+            }
 
             // StopWatch 计时
             StopWatch stopWatch = new StopWatch();
@@ -73,15 +78,14 @@ public class ControllerAspect {
                 Map<String, Object> args = new HashMap<>(6);
                 args.put("开始执行时间", stopWatch.getStartTime());
                 args.put("开始执行时间（用来展示）", new Date(stopWatch.getStartTime()).toString());
-                args.put("入参", proceedingJoinPoint.getArgs());
                 args.put("出参", result);
                 args.put("方法执行时长(ms)", stopWatch.getTime());
                 logger.info(methodName, sessionId, "服务执行结束", args);
             }
             return result;
-        } catch (ConstraintDeclarationException e) {
+        } catch (ValidationException e) {
             logger.error(methodName, "参数验证失败", e);
-            return new ResultVo<>(OperationConstants.VALIDATION_FAILED);
+            return new ResultVo<>(OperationConstants.VALIDATION_FAILED, e.getMessage());
         } catch (Exception e) {
             logger.error(methodName, sessionId, "服务出现异常", e);
         }
@@ -89,7 +93,46 @@ public class ControllerAspect {
         return new ResultVo<>(OperationConstants.SYSTEM_ERROR);
     }
 
+    /**
+     * 获取非Errors类型参数，否则转json报错
+     *
+     * @param args
+     * @return
+     */
+    private List<Object> getParameters(Object[] args) {
+        List<Object> parameters = new LinkedList<>();
+        for (Object arg : args) {
+            if (arg instanceof Errors) continue;
+            parameters.add(arg);
+        }
+        return parameters;
+    }
 
+    /**
+     * 获取拦截的Errors信息
+     *
+     * @param args
+     * @return
+     */
+    private List<String> getErrorMessage(Object[] args) {
+        List<String> messages = new LinkedList<>();
+        for (Object arg : args) {
+            if (arg instanceof Errors && ((Errors) arg).hasErrors()) {
+                for (ObjectError objectError : ((Errors) arg).getAllErrors()) {
+                    messages.add(objectError.getDefaultMessage());
+                }
+            }
+        }
+        return messages;
+    }
+
+    /**
+     * 获取session ID
+     *
+     * @param method
+     * @param args
+     * @return
+     */
     private String getSessionId(Method method, Object[] args) {
 
         Object sessionId = null;
