@@ -19,6 +19,8 @@
         <module>spring-boot-study-parent</module>
         <module>spring-boot-study-webflux</module>
         <module>spring-boot-study</module>
+
+        <module>spring-boot-kafka-study</module>
     </modules>
 
 </project>
