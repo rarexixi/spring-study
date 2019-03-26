@@ -47,9 +47,9 @@ public class KafkaConfig {
     private Map<String, Object> consumerProps() {
         Map<String, Object> props = new HashMap<>();
         //连接地址
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "172.21.206.16:6667,172.21.206.17:6667,172.21.206.18:6667");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka servers");
         //GroupID
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "huanxin_test");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "test");
         //是否自动提交
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         //自动提交的频率
@@ -67,7 +67,7 @@ public class KafkaConfig {
     private Map<String, Object> senderProps() {
         Map<String, Object> props = new HashMap<>();
         //连接地址
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "172.21.206.16:6667,172.21.206.17:6667,172.21.206.18:6667");
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka servers");
         //重试，0为不启用重试机制
         props.put(ProducerConfig.RETRIES_CONFIG, 3);
         //控制批处理大小，单位为字节
