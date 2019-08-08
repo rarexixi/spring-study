@@ -19,6 +19,7 @@
         <module>spring-boot-study-parent</module>
         <module>spring-boot-study-webflux</module>
         <module>spring-boot-study</module>
+        <module>multi-datasourse</module>
     </modules>
 
 </project>

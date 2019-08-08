@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.xi.multidatasourse.mapper2.User2Mapper">
+
+    <resultMap id="BaseModelMap" type="org.xi.multidatasourse.model.User2">
+        <result property="id" column="id"/>
+        <result property="username2" column="username2"/>
+    </resultMap>
+
+    <select id="select" resultMap="BaseModelMap">
+        SELECT
+        id,
+        username2
+        FROM
+        `user2`
+    </select>
+</mapper>
