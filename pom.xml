@@ -20,6 +20,8 @@
         <module>spring-boot-study-webflux</module>
         <module>spring-boot-study</module>
         <module>multi-datasourse</module>
+
+        <module>spring-boot-kafka-study</module>
     </modules>
 
 </project>
