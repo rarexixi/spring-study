@@ -18,10 +18,18 @@
 
         <module>spring-boot-study-parent</module>
         <module>spring-boot-study-webflux</module>
+        <module>spring-boot-rest-api</module>
         <module>spring-boot-study</module>
         <module>multi-datasourse</module>
+        <module>redis-operations</module>
+        <module>ehcache-operations</module>
+        <module>zookeeper-server-app</module>
+        <module>zookeeper-client-app</module>
 
         <module>spring-boot-kafka-study</module>
+        <module>quartz-scheduler</module>
+
+        <module>test</module>
     </modules>
 
 </project>

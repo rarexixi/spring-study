@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.xi.multidatasourse.mapper.TransferApiMapper">
+
+    <resultMap id="TransferApiModel" type="org.xi.multidatasourse.model.TransferApiModel">
+        <result property="id" column="id"></result>
+        <result property="url" column="url"></result>
+        <result property="requestType" column="request_type"></result>
+        <result property="type" column="type"></result>
+    </resultMap>
+    <resultMap id="TransferApiParamModel" type="org.xi.multidatasourse.model.TransferApiParamModel">
+        <result property="paramName" column="param_name"></result>
+        <result property="paramPosition" column="param_position"></result>
+        <result property="requireParam" column="require_param"></result>
+        <result property="defaultValue" column="default_value"></result>
+    </resultMap>
+
+    <select id="getApi" resultMap="TransferApiModel">
+        select `a`.`id`,
+               concat(`m`.`domain`, `a`.`url`) as url,
+               `a`.`request_type`,
+               `a`.`type`
+        from `dmp_transfer_api` `a` join `dmp_transfer_api_module` `m` on `a`.`module_id`=`m`.`id`
+        where `m`.`module_name`=#{moduleName} and `a`.`api_name`=#{apiName}
+    </select>
+    <select id="getApiParams" resultMap="TransferApiParamModel">
+        select `param_name`,
+               `param_position`,
+               `require_param`,
+               `default_value`
+        from `dmp_transfer_api_params`
+        where `api_id` = #{apiId}
+    </select>
+</mapper>
