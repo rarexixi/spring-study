@@ -7,13 +7,21 @@ public class UserDetail implements Serializable {
     public UserDetail() {
     }
 
-    public UserDetail(String username, String password) {
+    public UserDetail(Integer id, String username) {
+        this.id = id;
         this.username = username;
-        this.password = password;
     }
 
+    private Integer id;
     private String username;
-    private String password;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
@@ -23,19 +31,11 @@ public class UserDetail implements Serializable {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     @Override
     public String toString() {
         return "UserDetail{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
+                "id=" + id +
+                ", username='" + username + '\'' +
                 '}';
     }
 }
