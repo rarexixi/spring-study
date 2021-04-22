@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.xi.restapi.exception.DataNotFoundException;
 import org.xi.restapi.model.User;
 import org.xi.restapi.model.UserSearchRequestModel;
 import org.xi.restapi.service.UserService;
@@ -41,7 +42,8 @@ public class UserController {
     @GetMapping("/detail/{id}")
     public ResponseEntity<User> detail(@NotNull @Min(value = 1, message = "用户id必须大于0") @PathVariable Integer id) {
         User user = userService.detail(id);
-        return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
+        if (user == null) throw new DataNotFoundException("数据不存在");
+        return ResponseEntity.ok(user);
     }
 
     /**

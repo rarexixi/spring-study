@@ -12,13 +12,8 @@ import java.util.Collection;
 public class ResponseModel<T> {
 
     private T data;
-    private Collection<ResponseError> errors;
 
     public static <T> ResponseModel<T> success(T data) {
-        return new ResponseModel<T>(data, null);
-    }
-
-    public static <T> ResponseModel<T> fail(Collection<ResponseError> errors) {
-        return new ResponseModel<T>(null, errors);
+        return new ResponseModel<T>(data);
     }
 }

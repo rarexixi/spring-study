@@ -8,12 +8,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.xi.restapi.exception.DataNotFoundException;
 import org.xi.restapi.model.ResponseError;
 import org.xi.restapi.model.ResponseModel;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,40 +22,50 @@ import java.util.stream.Collectors;
 public class ExceptionControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseModel<Object>> MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
-        List<ResponseError> errors = e.getBindingResult().getAllErrors().stream()
-                .map(item -> new ResponseError(item.getDefaultMessage()))
-                .collect(Collectors.toList());
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ResponseModel.fail(errors));
+    public ResponseEntity<ResponseError> MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
+        String error = e.getBindingResult().getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(";"));
+        return getError(HttpStatus.UNPROCESSABLE_ENTITY, error);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ResponseModel<Object>> ConstraintViolationExceptionHandler(ConstraintViolationException e) {
-        List<ResponseError> errors = e.getConstraintViolations().stream()
-                .map(item -> new ResponseError(item.getMessage()))
-                .collect(Collectors.toList());
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ResponseModel.fail(errors));
+    public ResponseEntity<ResponseError> ConstraintViolationExceptionHandler(ConstraintViolationException e) {
+        String error = e.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining(";"));
+        return getError(HttpStatus.UNPROCESSABLE_ENTITY, error);
     }
 
     @ExceptionHandler(BindException.class)
-    public ResponseEntity<ResponseModel<Object>> ConstraintViolationExceptionHandler(BindException e) {
-        List<ResponseError> errors = e.getAllErrors().stream()
-                .map(item -> new ResponseError(item.getDefaultMessage()))
-                .collect(Collectors.toList());
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ResponseModel.fail(errors));
+    public ResponseEntity<ResponseError> ConstraintViolationExceptionHandler(BindException e) {
+        String error = e.getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(";"));
+        return getError(HttpStatus.UNPROCESSABLE_ENTITY, error);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ResponseModel<Object>> ConstraintViolationExceptionHandler(MethodArgumentTypeMismatchException e) {
-        List<ResponseError> errors = new ArrayList<>(1);
-        errors.add(new ResponseError("参数转换错误"));
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ResponseModel.fail(errors));
+    public ResponseEntity<ResponseError> ConstraintViolationExceptionHandler(MethodArgumentTypeMismatchException e) {
+        String error = "参数转换错误";
+        return getError(HttpStatus.UNPROCESSABLE_ENTITY, error);
+    }
+
+    @ExceptionHandler(DataNotFoundException.class)
+    public ResponseEntity<ResponseError> ExceptionHandler(DataNotFoundException e) {
+        String error = e.getMessage();
+        return getError(HttpStatus.NOT_FOUND, error);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResponseModel<Object>> ExceptionHandler(Exception e) {
-        List<ResponseError> errors = new ArrayList<>(1);
-        errors.add(new ResponseError(e.getMessage()));
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ResponseModel.fail(errors));
+    public ResponseEntity<ResponseError> ExceptionHandler(Exception e) {
+        String error = e.getMessage();
+        return getError(HttpStatus.INTERNAL_SERVER_ERROR, error);
+    }
+
+    private ResponseEntity<ResponseError> getError(HttpStatus httpStatus, String message) {
+        ResponseError responseError = new ResponseError();
+        responseError.setMessage(message);
+        return ResponseEntity.status(httpStatus).body(responseError);
     }
 }

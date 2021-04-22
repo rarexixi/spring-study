@@ -19,6 +19,7 @@
         <module>spring-boot-study-parent</module>
         <module>spring-boot-study-webflux</module>
         <module>spring-boot-rest-api</module>
+        <module>spring-boot-rest-api-starter</module>
         <module>spring-boot-study</module>
         <module>multi-datasourse</module>
         <module>redis-operations</module>
@@ -30,6 +31,12 @@
         <module>quartz-scheduler</module>
 
         <module>test</module>
+        <module>spring-boot-rest-api-starter-test</module>
+        <module>spring-boot-neo4j-study</module>
+
+        <module>security-authorization-code-test</module>
+        <module>security-password-test</module>
+        <module>security-authorization-client01</module>
     </modules>
 
 </project>
