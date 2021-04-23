@@ -16,15 +16,15 @@ import java.util.Map;
 @SpringBootTest
 public class JwtApplicationTest {
 
-    final static Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode("sdfdhuaiojdewqbfhioncd0wqkpoiru92384321421gyidhsbkfnsjafdshbidsoid9024u120"));
+    final static Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode("sdfdhuaiojdewqbfhioncd0wqkpoiru92384321421gyidhsbkfnsjafdshbidsd"));
 
     @Test
     public void testCreateAndParseToken() {
         String token = Jwts.builder()
-                .setId("8888")
+//                .setId("8888")
                 .setSubject("Rose")
                 .setIssuedAt(new Date())
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(key)
                 .compact();
         System.out.println(token);
 
@@ -50,7 +50,7 @@ public class JwtApplicationTest {
                 .setId("8888")
                 .setSubject("Rose")
                 .setIssuedAt(new Date())
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(key)
                 .setExpiration(new Date(now + 1000)); // 设置1s后过期
         String token = jwtBuilder.compact();
         System.out.println(token);
@@ -75,6 +75,7 @@ public class JwtApplicationTest {
         }
 
         try {
+            // 1s 后过期，解析会出现异常
             Thread.sleep(1000);
             System.out.println("+=========================+");
             Claims xxxx = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
@@ -101,7 +102,7 @@ public class JwtApplicationTest {
                 .setId("8888")
                 .setSubject("Rose")
                 .setIssuedAt(new Date())
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(key)
                 .claim("roles", "admin") // 两种方式
                 .addClaims(claims);
         String token = jwtBuilder.compact();
