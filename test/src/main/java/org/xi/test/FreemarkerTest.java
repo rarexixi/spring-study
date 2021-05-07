@@ -39,8 +39,8 @@ public class FreemarkerTest {
         data.put("jobId", 2);
         data.put("jobName", "job1");
         model.put("data", data);
-        String ftl = "<#list data?entrySet as key>\n" +
-                "     key:${key}\n" +
+        String ftl = "<#list data?keys as key>\n" +
+                "key:${data[key]}\n" +
                 "</#list>";
         System.out.println(process(ftl, model));
     }
