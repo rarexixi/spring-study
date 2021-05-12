@@ -19,7 +19,6 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.ValidationException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -59,38 +58,30 @@ public class ControllerAspect {
         Method method = methodSignature.getMethod();
         String methodName = request.getRemoteHost() + method.getDeclaringClass().getName() + "." + method.getName();
         String sessionId = getSessionId(method, proceedingJoinPoint.getArgs());
-        try {
-            logger.info(methodName, sessionId, "服务开始执行", getParameters(proceedingJoinPoint.getArgs()));
 
-            List<String> messages = getErrorMessage(proceedingJoinPoint.getArgs());
-            if (!messages.isEmpty()) {
-                logger.error(methodName, "参数验证失败", messages);
-                return new ResultVo<>(OperationConstants.VALIDATION_FAILED, messages);
-            }
+        logger.info(methodName, sessionId, "服务开始执行", getParameters(proceedingJoinPoint.getArgs()));
 
-            // StopWatch 计时
-            StopWatch stopWatch = new StopWatch();
-            stopWatch.start();
-            Object result = proceedingJoinPoint.proceed();
-            stopWatch.stop();
-
-            if (logger.isInfoEnabled()) {
-                Map<String, Object> args = new HashMap<>(6);
-                args.put("开始执行时间", stopWatch.getStartTime());
-                args.put("开始执行时间（用来展示）", new Date(stopWatch.getStartTime()).toString());
-                args.put("出参", result);
-                args.put("方法执行时长(ms)", stopWatch.getTime());
-                logger.info(methodName, sessionId, "服务执行结束", args);
-            }
-            return result;
-        } catch (ValidationException e) {
-            logger.error(methodName, "参数验证失败", e);
-            return new ResultVo<>(OperationConstants.VALIDATION_FAILED, e.getMessage());
-        } catch (Exception e) {
-            logger.error(methodName, sessionId, "服务出现异常", e);
+        List<String> messages = getErrorMessage(proceedingJoinPoint.getArgs());
+        if (!messages.isEmpty()) {
+            logger.error(methodName, "参数验证失败", messages);
+            return new ResultVo<>(OperationConstants.VALIDATION_FAILED, messages);
         }
 
-        return new ResultVo<>(OperationConstants.SYSTEM_ERROR);
+        // StopWatch 计时
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        Object result = proceedingJoinPoint.proceed();
+        stopWatch.stop();
+
+        if (logger.isInfoEnabled()) {
+            Map<String, Object> args = new HashMap<>(6);
+            args.put("开始执行时间", stopWatch.getStartTime());
+            args.put("开始执行时间（用来展示）", new Date(stopWatch.getStartTime()).toString());
+            args.put("出参", result);
+            args.put("方法执行时长(ms)", stopWatch.getTime());
+            logger.info(methodName, sessionId, "服务执行结束", args);
+        }
+        return result;
     }
 
     /**

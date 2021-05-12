@@ -9,7 +9,6 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public interface ValidateService {
-    ResultVo<String> hello(@Validated({DataAdd.class}) ValidateModel validateModel, @NotNull String message);
-    ResultVo<List<ValidateModel>> getList(@NotNull @Validated({DataAdd.class}) List<ValidateModel> validateModel);
-    ResultVo<List<ValidateModel>> getList();
+    String hello(@Validated({DataAdd.class}) ValidateModel validateModel, @NotNull String message);
+    List<ValidateModel> getList();
 }

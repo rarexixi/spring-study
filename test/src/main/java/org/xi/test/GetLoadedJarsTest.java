@@ -17,7 +17,6 @@ public class GetLoadedJarsTest {
         // Class<?> driverClass = Class.forName("com.mysql.cj.jdbc.Driver", true, urlClassLoader);
         // Class<?> driverClass = Class.forName("com.mysql.cj.jdbc.Driver"); // 无法获取
 
-
         // 第二种方式，会将当前jar包加载到当前classpath
         URL url = new URL("file:///Users/xi/.m2/repository/mysql/mysql-connector-java/8.0.24/mysql-connector-java-8.0.24.jar");
         URLClassLoader urlClassLoader = (URLClassLoader)ClassLoader.getSystemClassLoader();
